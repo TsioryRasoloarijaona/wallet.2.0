@@ -4,6 +4,8 @@ import currency.Currency;
 import currency.CurrencyCrud;
 import transaction.Transaction;
 import transaction.TransactionCrud;
+import transfer.Transfer;
+import transfer.TransferCrud;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,8 +19,13 @@ public class Main {
         TransactionCrud insert = new TransactionCrud(connection);
        System.out.println(insert.transaction(transaction));*/
 
-        /*Account account = new Account("banque1" , currency ,30000,"mobile1");
-        AccountCrud insert = new AccountCrud(connection);
-        System.out.println(insert.insert(account));*/
+
+        Account account = new Account("banque1" , currency ,30000,"mobile1");
+        Transfer transfer = new Transfer(6,5,1000);
+        TransferCrud crud = new TransferCrud(connection);
+        crud.execute(transfer);
+        System.out.println(crud.findAll());
+
+        // System.out.println(insert.insert(account));
     }
 }
