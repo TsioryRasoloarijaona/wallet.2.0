@@ -121,7 +121,7 @@ public class TransferCrud implements TransferOprations {
     @Override
     public Transfer insertBalance(Transfer transfer) {
         String sql1 = "insert into balance (account_id , amount) values (?,?),(?,?)";
-        if (Objects.equals(getAccountCurrencyDebit(transfer), getAccountCurrencyCredit(transfer))) {
+        if (getAccountCurrencyCredit(transfer) == getAccountCurrencyDebit(transfer)) {
             double newAmountDebitAccount = getAmountDebit(transfer) - transfer.getAmount();
             double newAmountCreditAccount = getAmountCredit(transfer) + transfer.getAmount();
 
@@ -157,7 +157,7 @@ public class TransferCrud implements TransferOprations {
         public Transfer insertTransaction (Transfer transfer){
 
             String sql3 = "insert into transaction (account_id,label,  amount, transaction_type) values (?,?,?,?),(?,?,?,?)";
-            if (Objects.equals(getAccountCurrencyDebit(transfer), getAccountCurrencyCredit(transfer))) {
+            if (getAccountCurrencyCredit(transfer) == getAccountCurrencyDebit(transfer)) {
                 try (PreparedStatement statement = connection.prepareStatement(sql3)) {
                     statement.setInt(1, transfer.getDebit_account());
                     statement.setString(2, "transfer");
