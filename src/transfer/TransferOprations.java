@@ -14,4 +14,9 @@ public interface TransferOprations {
     Transfer execute(Transfer transfer);
 
     List<Transfer> findAll();
+
+    int getAccountCurrencyCredit (Transfer transfer);
+    int getAccountCurrencyDebit (Transfer transfer);
+
+
 }

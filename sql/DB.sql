@@ -39,3 +39,12 @@ create database wallet;
                 date_time timestamp default current_timestamp
 
             );
+
+
+            create table currency_value(
+                currency_value_id serial primary key ,
+                currency_source_id int references currency (currency_id),
+                currency_destination int references currency (currency_id),
+                amount double precision ,
+                date_effect timestamp default current_timestamp
+            );
