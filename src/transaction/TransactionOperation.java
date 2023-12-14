@@ -12,4 +12,5 @@ public interface TransactionOperation {
         String getAccountType (Transaction transaction);
 
         Account getAccount(Transaction transaction);
+        int getCategory (Transaction transaction);
 }

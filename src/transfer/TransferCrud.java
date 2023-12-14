@@ -156,7 +156,7 @@ public class TransferCrud implements TransferOprations {
         @Override
         public Transfer insertTransaction (Transfer transfer){
 
-            String sql3 = "insert into transaction (account_id,label,  amount, transaction_type) values (?,?,?,?),(?,?,?,?)";
+            String sql3 = "insert into transaction (account_id,  amount, category_id) values (?,?,?),(?,?,?)";
             if (getAccountCurrencyCredit(transfer) == getAccountCurrencyDebit(transfer)) {
                 try (PreparedStatement statement = connection.prepareStatement(sql3)) {
                     statement.setInt(1, transfer.getDebit_account());

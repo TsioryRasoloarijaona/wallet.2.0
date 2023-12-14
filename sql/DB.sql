@@ -48,3 +48,16 @@ create database wallet;
                 amount double precision ,
                 date_effect timestamp default current_timestamp
             );
+
+          create table category(
+              category_id serial primary key,
+              category_name varchar (200) unique ,
+              category_type varchar (10) check ( category_type = 'debit' or category_type = 'credit' )
+          );
+
+            alter table transaction drop column label;
+alter table transaction drop column transaction_type;
+alter table transaction add column category_id int references category (category_id);
+
+
+

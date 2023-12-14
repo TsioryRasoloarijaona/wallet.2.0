@@ -2,6 +2,7 @@ package transaction;
 
 import account.Account;
 import balance.Balance;
+import category.Category;
 import currency.Currency;
 
 import java.sql.*;
@@ -33,14 +34,31 @@ public class TransactionCrud implements TransactionOperation{
         }
         return amount;
     }
+
+    public int getCategory (Transaction transaction){
+        String sql = "select category_id from category where category_name = ?";
+        int id = 0;
+        try (PreparedStatement statement = connection.prepareStatement(sql)){
+
+            statement.setString(1, transaction.getCategory().getCategoryName());
+            ResultSet resultSet =statement.executeQuery();
+            while (resultSet.next()){
+                id = resultSet.getInt("category_id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return id;
+    }
     @Override
     public void inserttransaction (Transaction transaction){
-        String sql3 = "insert into transaction (account_id,label,  amount, transaction_type) values (?,?,?,?)";
+
+        String sql3 = "insert into transaction (account_id,category_id,  amount) values (?,?,?)";
         try(PreparedStatement statement = connection.prepareStatement(sql3)) {
             statement.setInt(1,transaction.getAccount_id());
-            statement.setString(2,transaction.getLabel());
+            statement.setInt(2, getCategory(transaction));
             statement.setDouble(3,transaction.getAmount());
-            statement.setString(4, transaction.getTransaction_type());
+
             statement.executeUpdate();
 
 
@@ -68,7 +86,7 @@ public class TransactionCrud implements TransactionOperation{
 
         double newAmount;
 
-        if (transaction.getTransaction_type() == "credit") {
+        if (transaction.getCategory().getCategoryType() == "credit") {
              newAmount = amount + transaction.getAmount();
         }else {
             newAmount = amount - transaction.getAmount();
@@ -140,18 +158,21 @@ public class TransactionCrud implements TransactionOperation{
 
         Balance balance = new Balance(amount,dateTimeBalance);
 
-        String sql3 = "select label ,amount ,date_time ,transaction_type from transaction where account_id = ?";
+        String sql3 = "select  amount ,date_time , category_name , category_type from transaction inner join category on transaction.category_id = category.category_id where account_id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql3)){
             statement.setInt(1,account_id);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
+
                 transactions.add(new Transaction(
-                        resultSet.getString("label"),
                         resultSet.getDouble("amount"),
                         resultSet.getTimestamp("date_time"),
-                        resultSet.getString("transaction_type")
+                        new Category(resultSet.getString("category_name"),
+                              resultSet.getString("category_type")  )
+
                 ));
+
 
             }
         } catch (SQLException e) {
@@ -169,7 +190,7 @@ public class TransactionCrud implements TransactionOperation{
         double amount = getAmount(transaction);
 
         if (Objects.equals(accountType, "cash")){
-            if (transaction.getTransaction_type() == "debit"){
+            if (transaction.getCategory().getCategoryType() == "debit"){
                 if (amount >= transaction.getAmount()){
                     inserttransaction(transaction);
                     insertBalance(transaction);

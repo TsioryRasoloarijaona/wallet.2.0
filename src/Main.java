@@ -1,6 +1,8 @@
 import CurrencyValue.CurrencyValue;
 import account.Account;
 import account.AccountCrud;
+import category.Category;
+import category.CategoryCrud;
 import currency.Currency;
 import currency.CurrencyCrud;
 import transaction.Transaction;
@@ -20,10 +22,10 @@ public class Main {
         TransactionCrud insert = new TransactionCrud(connection);
        System.out.println(insert.transaction(transaction));*/
 
-        CurrencyValue currencyValue = new CurrencyValue(2,1,4800);
+       /* CurrencyValue currencyValue = new CurrencyValue(2,1,4800);
         CurrencyValueOperatons currencyValueOperatons = new CurrencyValueOperatons(connection);
        //currencyValueOperatons.insert(currencyValue);
-        System.out.println(currencyValueOperatons.ConvertByMedian(2, 1, 1));
+        System.out.println(currencyValueOperatons.ConvertByMedian(2, 1, 1));*/
 
 
         /*Account account = new Account("banque1" , currency ,30000,"mobile1");
@@ -33,5 +35,14 @@ public class Main {
         System.out.println(crud.findAll());*/
 
         // System.out.println(insert.insert(account));
+
+        Category category = new Category("send_money" , "debit");
+        CategoryCrud categoryCrud = new CategoryCrud(connection);
+        categoryCrud.insert(category);
+
+       /* Transaction transaction = new Transaction(6,category,10000);
+
+        TransactionCrud transactionCrud = new TransactionCrud(connection);
+        System.out.println(transactionCrud.transaction(transaction));*/
     }
 }
