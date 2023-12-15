@@ -7,11 +7,14 @@ import currency.Currency;
 import currency.CurrencyCrud;
 import transaction.Transaction;
 import transaction.TransactionCrud;
+import transactionSum.SumFunctions;
+import transactionSum.TransactionSum;
 import transfer.Transfer;
 import transfer.TransferCrud;
 import CurrencyValue.CurrencyValueOperatons;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
@@ -29,10 +32,10 @@ public class Main {
 
 
        // Account account = new Account("banque2" , currency ,30000,"mobile1");
-        Transfer transfer = new Transfer(7,6,1);
+        /*Transfer transfer = new Transfer(7,6,1);
         CurrencyValueOperatons currencyValueOperatons = new CurrencyValueOperatons(connection);
         TransferCrud crud = new TransferCrud(connection , currencyValueOperatons);
-        crud.execute(transfer);
+        crud.execute(transfer);*/
        // System.out.println(crud.findAll());
        // AccountCrud accountCrud = new AccountCrud(connection);
        // accountCrud.insert(account);
@@ -47,5 +50,9 @@ public class Main {
 
         TransactionCrud transactionCrud = new TransactionCrud(connection);
         System.out.println(transactionCrud.transaction(transaction));*/
+
+        SumFunctions sumFunctions = new SumFunctions(connection);
+        System.out.println(sumFunctions.sumTransaction(7, Timestamp.valueOf("2023-12-15 11:00:00"), Timestamp.valueOf("2023-12-15 11:20:00")));
+        System.out.println(sumFunctions.sumTransactionJava(7, Timestamp.valueOf("2023-12-15 11:00:00"), Timestamp.valueOf("2023-12-15 11:20:00")));
     }
 }

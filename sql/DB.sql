@@ -75,7 +75,36 @@ end;
  $$ LANGUAGE plpgsql;
 
 
+CREATE OR REPLACE FUNCTION get_credit_and_debit(account_id INT, start_time TIMESTAMP, end_time TIMESTAMP)
+RETURNS TABLE (credit DOUBLE PRECISION, debit DOUBLE PRECISION) AS $$
+BEGIN
+SELECT
+    COALESCE(SUM(amount), 0) INTO credit
+FROM
+    transaction
+        INNER JOIN
+    category ON transaction.category_id = category.category_id
+WHERE
+    transaction.date_time BETWEEN start_time AND end_time
+  AND category_type = 'credit'
+  AND transaction.account_id = get_credit_and_debit.account_id;
 
+SELECT
+    COALESCE(SUM(amount), 0) INTO debit
+FROM
+    transaction
+        INNER JOIN
+    category ON transaction.category_id = category.category_id
+WHERE
+    transaction.date_time BETWEEN start_time AND end_time
+  AND category_type = 'debit'
+  AND transaction.account_id = get_credit_and_debit.account_id;
+
+RETURN NEXT;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT sum_transaction(7, '2023-12-15 11:00:00'::timestamp ,'2023-12-15 11:20:00'::timestamp) AS total_amount;
 
 
 
