@@ -61,3 +61,23 @@ alter table transaction add column category_id int references category (category
 
 
 
+
+    create or replace function sum_transaction ( account_id int,   start timestamp  ,  final timestamp )
+ returns double precision as $$
+begin
+return
+        (select sum(amount) from transaction inner join category
+                                                        on transaction.category_id = category.category_id where (transaction.date_time between start and final) and
+          category_type = 'credit' and transaction.account_id = sum_transaction.account_id ) - (select sum(amount) from transaction inner join category
+                                                                                               on transaction.category_id = category.category_id where (transaction.date_time between start and final) and
+                                                        category_type = 'debit' and transaction.account_id = sum_transaction.account_id);
+end;
+ $$ LANGUAGE plpgsql;
+
+
+
+
+
+
+
+
