@@ -1,6 +1,9 @@
 package transfer;
 
 import CurrencyValue.CurrencyValueOperatons;
+import category.CategoryCrud;
+import transaction.Transaction;
+import transaction.TransactionCrud;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,9 +15,11 @@ import java.util.Objects;
 
 public class TransferCrud implements TransferOprations {
     Connection connection;
+    CurrencyValueOperatons currencyValueOperatons ;
 
-    public TransferCrud(Connection connection) {
+    public TransferCrud(Connection connection, CurrencyValueOperatons currencyValueOperatons) {
         this.connection = connection;
+        this.currencyValueOperatons = currencyValueOperatons;
     }
 
     @Override
@@ -36,9 +41,9 @@ public class TransferCrud implements TransferOprations {
     @Override
     public int getAccountCurrencyDebit(Transfer transfer) {
         int accountCurrency = 0;
-        String sql1 = "select name from currency inner join account on currency.currency_id = account.currency_id where account_id = ?";
+        String sql1 = "select currency_id from account where account_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql1)) {
-            statement.setInt(1, transfer.getCredit_account());
+            statement.setInt(1, transfer.getDebit_account());
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 accountCurrency = resultSet.getInt("currency_id");
@@ -49,6 +54,8 @@ public class TransferCrud implements TransferOprations {
         return accountCurrency;
 
     }
+
+
 
     @Override
     public String getAccountType(Transfer transfer) {
@@ -79,6 +86,38 @@ public class TransferCrud implements TransferOprations {
             throw new RuntimeException(e);
         }
         return transfer;
+    }
+
+    public int getCategoryDebit (){
+        String sql = "select category_id from category where category_name = ?";
+        int id = 0;
+        try (PreparedStatement statement = connection.prepareStatement(sql)){
+
+            statement.setString(1, "send_money");
+            ResultSet resultSet =statement.executeQuery();
+            while (resultSet.next()){
+                id = resultSet.getInt("category_id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return id;
+    }
+
+    public int getCategoryCreditCredit (){
+        String sql = "select category_id from category where category_name = ?";
+        int id = 0;
+        try (PreparedStatement statement = connection.prepareStatement(sql)){
+
+            statement.setString(1, "get_money");
+            ResultSet resultSet =statement.executeQuery();
+            while (resultSet.next()){
+                id = resultSet.getInt("category_id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return id;
     }
 
     @Override
@@ -136,9 +175,9 @@ public class TransferCrud implements TransferOprations {
             }
         } else {
             double newAmountDebitAccount = getAmountDebit(transfer) - transfer.getAmount();
-            CurrencyValueOperatons currencyValueOperatons = null;
-            double credit = currencyValueOperatons.ConvertByAvarage(transfer.getDebit_account(), transfer.getCredit_account(), transfer.getAmount());
 
+            double credit = currencyValueOperatons.ConvertByAvarage(getAccountCurrencyDebit(transfer), getAccountCurrencyCredit(transfer), transfer.getAmount())+getAmountCredit(transfer);
+            System.out.println(credit);
             try (PreparedStatement statement = connection.prepareStatement(sql1)) {
                 statement.setInt(1, transfer.getDebit_account());
                 statement.setDouble(2, newAmountDebitAccount);
@@ -156,18 +195,22 @@ public class TransferCrud implements TransferOprations {
         @Override
         public Transfer insertTransaction (Transfer transfer){
 
+
+        int categoryIdDbit = getCategoryDebit();
+        int categoryIdCredit = getCategoryCreditCredit();
+
             String sql3 = "insert into transaction (account_id,  amount, category_id) values (?,?,?),(?,?,?)";
             if (getAccountCurrencyCredit(transfer) == getAccountCurrencyDebit(transfer)) {
                 try (PreparedStatement statement = connection.prepareStatement(sql3)) {
                     statement.setInt(1, transfer.getDebit_account());
-                    statement.setString(2, "transfer");
-                    statement.setDouble(3, transfer.getAmount());
-                    statement.setString(4, "debit");
 
-                    statement.setInt(5, transfer.getCredit_account());
-                    statement.setString(6, "transfer");
-                    statement.setDouble(7, transfer.getAmount());
-                    statement.setString(8, "credit");
+                    statement.setDouble(2, transfer.getAmount());
+                    statement.setInt(3, categoryIdDbit);
+
+                    statement.setInt(4, transfer.getCredit_account());
+
+                    statement.setDouble(5, transfer.getAmount());
+                    statement.setInt(6, categoryIdCredit);
                     statement.executeUpdate();
 
 
@@ -176,18 +219,19 @@ public class TransferCrud implements TransferOprations {
                 }
 
             } else {
-                CurrencyValueOperatons currencyValueOperatons = null;
-                double credit = currencyValueOperatons.ConvertByAvarage(transfer.getDebit_account(), transfer.getCredit_account(), transfer.getAmount());
+
+                double credit = currencyValueOperatons.ConvertByAvarage(getAccountCurrencyDebit(transfer), getAccountCurrencyCredit(transfer), transfer.getAmount());
+                System.out.println(credit);
                 try (PreparedStatement statement = connection.prepareStatement(sql3)) {
                     statement.setInt(1, transfer.getDebit_account());
-                    statement.setString(2, "transfer");
-                    statement.setDouble(3, transfer.getAmount());
-                    statement.setString(4, "debit");
+                    statement.setDouble(2, transfer.getAmount());
+                    statement.setInt(3, categoryIdDbit);
 
-                    statement.setInt(5, transfer.getCredit_account());
-                    statement.setString(6, "transfer");
-                    statement.setDouble(7, credit);
-                    statement.setString(8, "credit");
+
+                    statement.setInt(4, transfer.getCredit_account());
+                    statement.setDouble(5, credit);
+                    statement.setInt(6, categoryIdCredit);
+
                     statement.executeUpdate();
 
 

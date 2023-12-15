@@ -18,5 +18,8 @@ public interface TransferOprations {
     int getAccountCurrencyCredit (Transfer transfer);
     int getAccountCurrencyDebit (Transfer transfer);
 
+    int getCategoryDebit ();
+
+    int getCategoryCreditCredit ();
 
 }

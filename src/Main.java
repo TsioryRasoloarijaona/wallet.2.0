@@ -22,23 +22,26 @@ public class Main {
         TransactionCrud insert = new TransactionCrud(connection);
        System.out.println(insert.transaction(transaction));*/
 
-       /* CurrencyValue currencyValue = new CurrencyValue(2,1,4800);
+      // CurrencyValue currencyValue = new CurrencyValue(2,1,4800);
+      //  CurrencyValueOperatons currencyValueOperatons = new CurrencyValueOperatons(connection);
+      // currencyValueOperatons.insert(currencyValue);
+      // System.out.println(currencyValueOperatons.ConvertByAvarage(7, 6, 1));
+
+
+       // Account account = new Account("banque2" , currency ,30000,"mobile1");
+        Transfer transfer = new Transfer(7,6,1);
         CurrencyValueOperatons currencyValueOperatons = new CurrencyValueOperatons(connection);
-       //currencyValueOperatons.insert(currencyValue);
-        System.out.println(currencyValueOperatons.ConvertByMedian(2, 1, 1));*/
-
-
-        /*Account account = new Account("banque1" , currency ,30000,"mobile1");
-        Transfer transfer = new Transfer(6,5,10000);
-        TransferCrud crud = new TransferCrud(connection);
+        TransferCrud crud = new TransferCrud(connection , currencyValueOperatons);
         crud.execute(transfer);
-        System.out.println(crud.findAll());*/
+       // System.out.println(crud.findAll());
+       // AccountCrud accountCrud = new AccountCrud(connection);
+       // accountCrud.insert(account);
 
         // System.out.println(insert.insert(account));
 
-        Category category = new Category("send_money" , "debit");
+        /*Category category = new Category("get_money" , "credit");
         CategoryCrud categoryCrud = new CategoryCrud(connection);
-        categoryCrud.insert(category);
+        categoryCrud.insert(category);*/
 
        /* Transaction transaction = new Transaction(6,category,10000);
 
